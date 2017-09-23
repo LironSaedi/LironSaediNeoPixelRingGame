@@ -1,20 +1,24 @@
 #include <Adafruit_NeoPixel.h>
 int button = 12;
-int delayv = 100;
-int delaye = 200;
+int delayv = 200;
+int delaye = 300;
 int neoPixelNumber = 50;
 int i = 0;
 Adafruit_NeoPixel ring (12, 6);
 bool isGameRunning = true;
-
+cons int ledPin = LED_BUILTIN;
+int ledstate = LOW;
+unsigned long perviousMillis = 0;
+const long interval = 1000;
 
 
 
 void setup()
 {
+  
   pinMode( button, INPUT_PULLUP );
   // put your setup code here, to run once:
-
+  pinMode(ledPin,OUTPUT);
   Serial.begin(9600);
 
   ring.begin();
@@ -26,7 +30,20 @@ void loop()
 {
 
   // put your main code here, to run repeatedly:  //  delay(delayV);
-
+unsigned long currentMillis = millis;
+if (currentMillis - perviousMillis >= interval)
+{
+  previousMillis = currentMillis;
+if (ledState == LOW)
+{
+  ledState = HIGH;
+}
+ else 
+ {
+  ledtstate == LOW;
+  }
+  r
+}
   if (isGameRunning == true)
   {
     if (i < 12)
@@ -59,11 +76,15 @@ void loop()
       {
         isGameRunning = false;
         GameOver(true);
+        delay(delayv - 10);
+        Serial.println("speed up");
       }
       else
       {
         isGameRunning = false;
         GameOver(false);
+        delay(delayv + 140);
+        Serial.println("speed down");
       }
 
     }
