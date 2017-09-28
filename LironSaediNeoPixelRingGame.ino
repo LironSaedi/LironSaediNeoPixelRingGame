@@ -1,24 +1,27 @@
 #include <Adafruit_NeoPixel.h>
 int button = 12;
-int delayv = 200;
-int delaye = 300;
+
 int neoPixelNumber = 50;
 int i = 0;
 Adafruit_NeoPixel ring (12, 6);
-bool isGameRunning = true;
-cons int ledPin = LED_BUILTIN;
+const int ledPin = LED_BUILTIN;
 int ledstate = LOW;
-unsigned long perviousMillis = 0;
-const long interval = 1000;
+unsigned long previousMillis = 0;
+
+long start = 1000;
+long rate = 500;
+long finish = 0;
+long interval = start;
 
 
 
 void setup()
 {
-  
+  randomSeed(analogRead(A0));
+  b 
   pinMode( button, INPUT_PULLUP );
   // put your setup code here, to run once:
-  pinMode(ledPin,OUTPUT);
+  pinMode(ledPin, OUTPUT);
   Serial.begin(9600);
 
   ring.begin();
@@ -26,31 +29,22 @@ void setup()
 
 }
 
+
 void loop()
 {
 
   // put your main code here, to run repeatedly:  //  delay(delayV);
-unsigned long currentMillis = millis;
-if (currentMillis - perviousMillis >= interval)
-{
-  previousMillis = currentMillis;
-if (ledState == LOW)
-{
-  ledState = HIGH;
-}
- else 
- {
-  ledtstate == LOW;
-  }
-  r
-}
-  if (isGameRunning == true)
+  unsigned long currentMillis = millis();
+
+
+  if (currentMillis - previousMillis >= interval)
   {
+    previousMillis = currentMillis;
+
     if (i < 12)
     {
-
       ring.clear();
-      
+
       i++;
       if (i == 12)
       {
@@ -58,49 +52,46 @@ if (ledState == LOW)
       }
 
       ring.setPixelColor(3, ring.Color(0, 0, 255));
-      ring.show();  //  delay(delayV);
-      //  writeNum(eight, false);
-      //  delay(delayV);
+      ring.show();
       ring.setPixelColor(i, ring.Color(0, 255, 185));
       ring.show();
-      delay(delayv);
-
-    }
-
-
-    if (digitalRead (button) == LOW)
-    {
-
-      Serial.println(String(i, DEC));
-      if (i == 3)
-      {
-        isGameRunning = false;
-        GameOver(true);
-        delay(delayv - 10);
-        Serial.println("speed up");
-      }
-      else
-      {
-        isGameRunning = false;
-        GameOver(false);
-        delay(delayv + 140);
-        Serial.println("speed down");
-      }
-
-    }
-    else
-    {
-      Serial.println("0");
     }
   }
 
+  if (digitalRead (button) == LOW)
+  {
+    Serial.println(String(i, DEC));
+    if (i == 3)
+    {
+      interval -= rate;
+      GameOver(true);
+      Serial.println("speed up");
+    }
+    else
+    {
+      GameOver(false);
+      interval = start;
+      Serial.println("speed down");
+    }
+  }
+  else
+  {
+    Serial.println("0");
+  }
 
 }
-//    delay(delayv);
-//    ring.setPixelColor(i, ring.Color(0, 0, 0));
-//    delay(delayv);
-//    ring.setPixelColor(i, ring.Color(0, 0, 255));
-//    ring.show();
+void rainBowColors()
+{
+  for (int i = 0;  i < 12; i++)
+
+  {
+    int red = random(0,256);
+    int green = random(1,123);
+    int blue = random(1,214);
+    ring.setPixelColor(i, ring.Color(red, green, blue));
+    delay(500);
+  }
+}
 
 void RedColors()
 {
@@ -111,8 +102,7 @@ void RedColors()
   }
   ring.show();
 
-  delay(delaye);
-  isGameRunning = true;
+  delay(300);
   //after 2 seconds, restart the game
 }
 void GreenColors()
@@ -120,7 +110,7 @@ void GreenColors()
 
   for ( int i = 0; i < 12; i++)
   {
-   ring.setPixelColor(i, ring.Color(0,255,0));
+    ring.setPixelColor(i, ring.Color(0, 255, 0));
   }
 
   ring.show();
@@ -133,15 +123,22 @@ void GameOver(bool win)
   {
     Serial.println("YOU WIN");
     //GreenColors
-    GreenColors();
+    if (interval <= finish)
+    {
+      rainBowColors();
+      interval = start;
+    }
+    else
+    {
+      GreenColors();
+    }
     //speed up
   }
   else
   {
     Serial.println("YOU LOSE");
     RedColors();
-   
+
   }
-  delay(delaye);
-  isGameRunning = true;
+  delay(300);
 }
